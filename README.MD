@@ -5,7 +5,7 @@
 
 ## Open Terminal, then type command to clone this repo:  
 
-`git clone` 
+`git clone https://github.com/arcanine525/IOT-SmartPlug-Demo` 
 
 ## Go to project folder and install all libary:
 
