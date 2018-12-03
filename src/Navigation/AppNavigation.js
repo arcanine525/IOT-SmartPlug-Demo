@@ -1,14 +1,43 @@
-import { createStackNavigator } from "react-navigation";
+import {
+  createStackNavigator,
+  createTabNavigator,
+  createBottomTabNavigator
+} from "react-navigation";
 import HomeScreen from "../Screen/HomeScreen/HomeScreen";
+import LoginScreen from "../Screen/LoginScreen/LoginScreen";
+import SignUpScreen from "../Screen/SignUpScreen/SignUpScreen";
+import DetailScreen from "../Screen/DetailSreen/DetailSreen";
+import DetailDayScreen from "../Screen/DetailDayScreen/DetailDayScreen";
+import DetailMonthScreen from "../Screen/DetailMonthScreen/DetailMonthScreen";
+import DetailWeekScreen from "../Screen/DetailWeekScreen/DetailWeekScreen";
+
+const DetailTab = createBottomTabNavigator({
+  DetailDayScreen: {
+    screen: DetailDayScreen
+  },
+  DetailWeekScreen: {
+    screen: DetailWeekScreen
+  },
+  DetailMonthScreen: {
+    screen: DetailMonthScreen
+  }
+});
 
 const MainStack = createStackNavigator(
   {
     HomeScreen: {
       screen: HomeScreen
-    }
+    },
+    LoginScreen: {
+      screen: LoginScreen
+    },
+    SignUpScreen: {
+      screen: SignUpScreen
+    },
+    DetailScreen: DetailTab
   },
   {
-    initialRouteName: "HomeScreen",
+    initialRouteName: "LoginScreen",
     headerMode: "none"
   }
 );

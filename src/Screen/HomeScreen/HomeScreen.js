@@ -7,7 +7,14 @@
  */
 
 import React, { Component } from "react";
-import { StyleSheet, Text, View, Image, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  FlatList,
+  TouchableOpacity
+} from "react-native";
 import SwitchCardComponent from "../../Components/SwitchCardComponent/SwitchCardComponent";
 import { Card, Button } from "react-native-elements";
 import Images from "../../Theme/Image";
@@ -15,26 +22,48 @@ import Images from "../../Theme/Image";
 export default class HomeScreen extends Component {
   constructor(props) {
     super(props);
+    this._turnOffAll = this._turnOffAll.bind(this);
+    this._goToDetail = this._goToDetail.bind(this);
+    
+    //GET socket ID
+    const { socketID } = this.props.navigation.state.params;
+    
     this.state = {
       switchs: [
         { name: "SW1", state: false },
         { name: "SW2", state: false },
         { name: "SW3", state: false },
         { name: "SW4", state: false }
-      ]
+      ],
+      socketID: socketID
+
     };
   }
 
   _turnOffAll() {
-    //console.warn(this.state.switchs);
+    alert("Turn off all sockets");
+    this.setState({
+      switchs: [
+        { name: "SW1", state: false },
+        { name: "SW2", state: false },
+        { name: "SW3", state: false },
+        { name: "SW4", state: false }
+      ]
+    });
+  }
+
+  _goToDetail() {
+    this.props.navigation.navigate("DetailScreen", {socketID: this.state.socketID});
   }
 
   _renderItem = ({ item, index }) => (
-    <SwitchCardComponent
-      switchState={item.state}
-      switchName={item.name}
-      // onPress={(item.state = !item.state)}
-    />
+    <TouchableOpacity onPress={this._goToDetail}>
+      <SwitchCardComponent
+        switchState={item.state}
+        switchName={item.name}
+        // onPress={(item.state = !item.state)}
+      />
+    </TouchableOpacity>
   );
 
   _keyExtractor = (item, index) => item.name;
@@ -45,8 +74,8 @@ export default class HomeScreen extends Component {
           <View style={styles.headContainter}>
             <Image source={Images.dashboard} style={styles.dashboardImg} />
             <View style={styles.textContainer}>
-              <Text style={styles.text}> Active: </Text>
-              <Text style={styles.text}> Inactive: </Text>
+              <Text style={styles.text}> Active: #{this.state.socketID}</Text>
+              <Text style={styles.text}> Inactive: ##</Text>
             </View>
           </View>
 
