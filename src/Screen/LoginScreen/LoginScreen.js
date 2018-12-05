@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import Images from "../../Theme/Image";
 import axios from "axios";
 import styles from "./LoginScreenStyles";
+import Config from "../../Services/Config"
 export default class LoginSreen extends Component {
   constructor(props) {
     super(props);
@@ -28,7 +29,8 @@ export default class LoginSreen extends Component {
     // axios.post("http://192.168.0.139:5533/users/", user).then(res => {
     //   console.warn(res);
     // });
-    axios.post("http://192.168.0.139:5533/users/login", user).then(res => {
+    let url = Config.urlServer + "/users/login"
+    axios.post(url, user).then(res => {
       if (res.data == false) {
         //console.warn("OK!!!!");
         alert("Please try again!");
@@ -36,7 +38,7 @@ export default class LoginSreen extends Component {
         this.props.navigation.navigate("HomeScreen", {
           socketID: res.data.sockets
         });
-      console.warn(res);
+      //console.warn(res);
     });
   }
 
@@ -72,6 +74,16 @@ export default class LoginSreen extends Component {
           onPress={() => this._logIn(this.state.email, this.state.password)}
         >
           <Text style={styles.buttonText}>LOGIN</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() => {
+            this.props.navigation.navigate("SignUpSceen");
+          }}
+        >
+          <Text style={styles.buttonText}>
+            SIGN UP
+          </Text>
         </TouchableOpacity>
       </View>
     );

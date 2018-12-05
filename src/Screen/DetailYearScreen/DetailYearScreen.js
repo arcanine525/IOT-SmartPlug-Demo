@@ -9,8 +9,9 @@ import {
 } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import Images from "../../Theme/Image";
-import styles from "./DetailWeekScreenStyles";
+import styles from "./DetailYearScreenStyles";
 import axios from "axios";
+import Config from "../../Services/Config";
 //Calculate total
 //const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
 
@@ -30,7 +31,20 @@ export default class DetailMonthScreen extends Component {
       socketID: socketID,
 
       data: {
-        labels: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+        labels: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec"
+        ],
         datasets: [
           {
             data: [20, 45, 28, 80, 99, 43, 66]
@@ -40,59 +54,73 @@ export default class DetailMonthScreen extends Component {
     };
   }
   static navigationOptions = {
-    title: "WEEK"
+    title: "YEAR"
   };
 
   _getData = async () => {
     let today = new Date();
-    let dd = today.getDate();
+    //let dd = today.getDate();
     let mm = today.getMonth() + 1;
     let year = today.getFullYear();
     let url =
       "http://192.168.0.139:5533/sockets/" +
       this.state.socketID +
       "%" +
-      dd +
+      0 +
       "%" +
-      mm +
+      0 +
+      "%" +
+      year;
+
+    let url_year =
+      Config.urlServer +
+      "/sockets/" +
+      this.state.socketID +
+      "%" +
+      0 +
+      "%" +
+      0 +
       "%" +
       year;
     try {
       //let data = axios.get("http://192.168.0.139:5533/sockets/1%1%12%2018");
-      let res = await axios.get(url);
-      console.warn(url);
-
+      let res = await axios.get(url_year);
+      //console.warn(url);
+      let records = res.data.records;
+      let length = records.length;
+      //let labels = [];
+      let datasets = [];
+      records.forEach(records => {
+        datasets.push(records.totalConsumption);
+      });
       this.setState({
         loading: false,
         data: {
-          labels: ["D1", "D2", "D3", "D4", "D5", "D6", "D7"],
+          labels: [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec"
+          ],
           datasets: [
             {
-              data: [
-                res.data[6].consumption,
-                res.data[5].consumption,
-                res.data[4].consumption,
-                res.data[3].consumption,
-                res.data[2].consumption,
-                res.data[1].consumption,
-                res.data[0].consumption
-              ]
+              data: datasets
             }
           ]
         }
       });
     } catch (error) {
-      Alert.alert("Error: " + error);
+      alert("Error: " + error);
+      this.props.navigation.navigation("HomeScreen");
     }
-
-    // const data = {
-    //   labels: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
-    //   datasets: [
-    //     {
-    //       data: [20, 45, 28, 80, 99, 43, 66]
-    //     }
-    //   ]
-    // };
   };
   componentDidMount() {
     this._getData();
@@ -101,10 +129,6 @@ export default class DetailMonthScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.primaryTextContainer}>
-          Details for socket: {this.state.socketID}
-        </Text>
-
         <LineChart
           data={this.state.data}
           width={Dimensions.get("screen").width}

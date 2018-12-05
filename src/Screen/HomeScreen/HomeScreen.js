@@ -18,16 +18,17 @@ import {
 import SwitchCardComponent from "../../Components/SwitchCardComponent/SwitchCardComponent";
 import { Card, Button } from "react-native-elements";
 import Images from "../../Theme/Image";
-
+import Config from "../../Services/Config";
+import axios from "axios";
 export default class HomeScreen extends Component {
   constructor(props) {
     super(props);
-    this._turnOffAll = this._turnOffAll.bind(this);
+    //this._turnOffAll = this._turnOffAll.bind(this);
     this._goToDetail = this._goToDetail.bind(this);
-    
+
     //GET socket ID
     const { socketID } = this.props.navigation.state.params;
-    
+
     this.state = {
       switchs: [
         { name: "SW1", state: false },
@@ -36,37 +37,76 @@ export default class HomeScreen extends Component {
         { name: "SW4", state: false }
       ],
       socketID: socketID
-
     };
   }
 
-  _turnOffAll() {
-    alert("Turn off all sockets");
-    this.setState({
-      switchs: [
-        { name: "SW1", state: false },
-        { name: "SW2", state: false },
-        { name: "SW3", state: false },
-        { name: "SW4", state: false }
-      ]
+  _getData = async () => {
+    let today = new Date();
+    let dd = today.getDate();
+    let mm = today.getMonth() + 1;
+    let year = today.getFullYear();
+    let url =
+      "http://192.168.0.139:5533/sockets/" +
+      this.state.socketID +
+      "%" +
+      dd +
+      "%" +
+      mm +
+      "%" +
+      year;
+
+    let url_today =
+      Config.urlServer +
+      "/sockets/" +
+      this.state.socketID +
+      "%" +
+      dd +
+      "%" +
+      mm +
+      "%" +
+      year;
+    let url_month =
+      Config.urlServer +
+      "/sockets/" +
+      this.state.socketID +
+      "%" +
+      0 +
+      "%" +
+      mm +
+      "%" +
+      year;
+    //console.warn(url_month)
+    try {
+      //let data = axios.get("http://192.168.0.139:5533/sockets/1%1%12%2018");
+      let today = await axios.get(url_today);
+      let month = await axios.get(url_month);
+      //console.warn(today.data);
+      //console.warn(month.data);
+
+      this.setState({
+        loading: false
+        //today: res
+      });
+    } catch (error) {
+      alert("Error on Home: " + error);
+    }
+  };
+
+  _toggleSocket() {
+    let url = Config.urlServer + "/mqtts";
+    axios.post(url).then(res => {
+      alert("Socket toggle!");
     });
   }
 
   _goToDetail() {
-    this.props.navigation.navigate("DetailScreen", {socketID: this.state.socketID});
+    this.props.navigation.navigate("DetailScreen", {
+      socketID: this.state.socketID
+    });
   }
-
-  _renderItem = ({ item, index }) => (
-    <TouchableOpacity onPress={this._goToDetail}>
-      <SwitchCardComponent
-        switchState={item.state}
-        switchName={item.name}
-        // onPress={(item.state = !item.state)}
-      />
-    </TouchableOpacity>
-  );
-
-  _keyExtractor = (item, index) => item.name;
+  componentDidMount() {
+    this._getData();
+  }
   render() {
     return (
       <View>
@@ -74,23 +114,24 @@ export default class HomeScreen extends Component {
           <View style={styles.headContainter}>
             <Image source={Images.dashboard} style={styles.dashboardImg} />
             <View style={styles.textContainer}>
-              <Text style={styles.text}> Active: #{this.state.socketID}</Text>
-              <Text style={styles.text}> Inactive: ##</Text>
+              <Text style={styles.text}> Socket ID: #{this.state.socketID}</Text>
+              
             </View>
           </View>
 
           <Button
             textStyle={styles.text}
-            title="TURN OFF ALL"
-            onPress={this._turnOffAll}
+            title="Toggle Socket"
+            onPress={this._toggleSocket}
           />
+          <View style={{ marginTop: 20 }}>
+            <Button
+              textStyle={styles.text}
+              title="Go to Detail"
+              onPress={this._goToDetail}
+            />
+          </View>
         </Card>
-
-        <FlatList
-          data={this.state.switchs}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderItem}
-        />
       </View>
     );
   }
@@ -120,42 +161,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold"
   }
 });
-
-/*
-import React from "react";
-import { Text, View, TouchableOpacity } from "react-native";
-import SocketIOClient from "socket.io-client";
-//import { environment } from "../config/environment";
-
-export default class Play extends React.Component {
-  constructor(props) {
-    super(props);
-    this.socket = SocketIOClient(""); // replace 'environment.serverUrl' with your server url
-    this.socket.emit("channel1", "Hi server"); // emits 'hi server' to your server
-
-    // Listens to channel2 and display the data recieved
-    this.socket.on("channel2", data => {
-      console.log("Data recieved from server", data); //this will console 'channel 2'
-    });
-  }
-
-  clicked = () => {
-    const dataObj = {
-      action: "click"
-    };
-
-    this.socket.emit("channel2", dataObj);
-  };
-
-  render() {
-    return (
-      <View>
-        <Text> Socket.io with react native </Text>
-        <TouchableOpacity onPress={() => this.clicked}>
-          <Text> Socket.io with react native - click </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-}
-*/

@@ -11,7 +11,7 @@ import axios from "axios";
 import { LineChart } from "react-native-chart-kit";
 import Images from "../../Theme/Image";
 import styles from "./DetailDayScreenStyles";
-
+import Config from "../../Services/Config";
 const chartConfig = {
   backgroundColor: "#ffffff",
   backgroundGradientFrom: "#ffffff",
@@ -37,7 +37,14 @@ export default class DetailDayScreen extends Component {
     this.state = {
       socketID: socketID,
       loading: true,
-      data: ""
+      data: {
+        labels: ["D1", "D2", "D3", "D4", "D5", "D6", "D7"],
+        datasets: [
+          {
+            data: [2, 4.5, 2.8, 8, 9.9, 4, 6.6]
+          }
+        ]
+      }
     };
   }
   static navigationOptions = {
@@ -58,62 +65,56 @@ export default class DetailDayScreen extends Component {
       mm +
       "%" +
       year;
+
+    let url_today =
+      Config.urlServer +
+      "/sockets/" +
+      this.state.socketID +
+      "%" +
+      dd +
+      "%" +
+      mm +
+      "%" +
+      year;
     try {
       //let data = axios.get("http://192.168.0.139:5533/sockets/1%1%12%2018");
-      let res = await axios.get(url);
-      console.warn(res.data);
-
-      // this.setState({
-      //   loading: false,
-      //   data: res.data[0].consumption
-      // });
-
-      this.setState({
-        loading: false,
-        data: {
-          labels: ["D1", "D2", "D3", "D4", "D5", "D6", "D7"],
-          datasets: [
-            {
-              data: [
-                res.data[6].consumption,
-                res.data[5].consumption,
-                res.data[4].consumption,
-                res.data[3].consumption,
-                res.data[2].consumption,
-                res.data[1].consumption,
-                res.data[0].consumption
-              ]
-            }
-          ]
-        }
-      });
+      let res = await axios.get(url_today);
+      //console.warn(res.data);
+      // if (res.data[6].consumption == null) {
+      //   res.data[6].consumption = 0;
+      // }
+      let datasets = [];
+      if (res.data.length > 0) {
+        res.data.forEach(item => {
+          datasets.push(item.consumption);
+        });
+        this.setState({
+          loading: false,
+          data: {
+            labels: ["D1", "D2", "D3", "D4", "D5", "D6", "D7"],
+            datasets: [
+              {
+                data: datasets
+              }
+            ]
+          }
+        });
+      }
     } catch (error) {
-      Alert.alert("Error: " + error);
+      alert("Error: " + error);
+      this.props.navigation.navigation("HomeScreen");
     }
   };
 
   componentDidMount() {
-    // axios.get("http://192.168.0.139:5533/sockets/1%1%12%2018").then(res => {
-    //   console.warn(res.data);
-    // });
     this._getData();
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Image source={Images.totalEnergy} style={styles.logoContainer} />
-
-        <Text style={styles.primaryTextContainer}>
-          Today use: {this.state.data} kWh
-        </Text>
-        <View style={styles.infoContainer}>
-          <Text style={styles.secondTextContainer}>Estimate cost: </Text>
-          <Text style={styles.secondTextContainer}>500,000 VND</Text>
-        </View>
-
         <LineChart
-          data={data}
+          data={this.state.data}
           width={Dimensions.get("screen").width}
           height={(Dimensions.get("screen").height * 2) / 3}
           chartConfig={chartConfig}

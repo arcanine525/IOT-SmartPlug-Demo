@@ -24,6 +24,7 @@ export default styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   buttonContainer: {
+    margin: 15,
     backgroundColor: "#2980b6",
     paddingVertical: 15
   },

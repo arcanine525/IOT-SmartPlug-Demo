@@ -26,7 +26,7 @@ export default class LoginSreen extends Component {
   }
 
     axios.post("http://192.168.0.139:5533/users/", user).then(res => {
-      console.warn(res);
+      //console.warn(res);
     });
     //  axios.post("http://192.168.0.139:5533/users/", user).then(res => {
     //   console.warn(res);

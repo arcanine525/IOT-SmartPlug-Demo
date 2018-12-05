@@ -7,19 +7,19 @@ import HomeScreen from "../Screen/HomeScreen/HomeScreen";
 import LoginScreen from "../Screen/LoginScreen/LoginScreen";
 import SignUpScreen from "../Screen/SignUpScreen/SignUpScreen";
 import DetailScreen from "../Screen/DetailSreen/DetailSreen";
-import DetailDayScreen from "../Screen/DetailDayScreen/DetailDayScreen";
+import DetailDayScreen from "../Screen/DetailDayScreen/DetailDayScreen"
 import DetailMonthScreen from "../Screen/DetailMonthScreen/DetailMonthScreen";
-import DetailWeekScreen from "../Screen/DetailWeekScreen/DetailWeekScreen";
+import DetailYearScreen from "../Screen/DetailYearScreen/DetailYearScreen";
 
 const DetailTab = createBottomTabNavigator({
   DetailDayScreen: {
     screen: DetailDayScreen
   },
-  DetailWeekScreen: {
-    screen: DetailWeekScreen
-  },
   DetailMonthScreen: {
     screen: DetailMonthScreen
+  },
+  DetailYearScreen: {
+    screen: DetailYearScreen
   }
 });
 
